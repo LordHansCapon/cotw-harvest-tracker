@@ -7,17 +7,17 @@ The stat trak project generates a save file which contains all the harvests per 
 ### Reserves
 Home screen, all the reserves are listed.
 
-![Reserves](/images/reserves.png)
+![Reserves](/images/reserves.PNG)
 
 ### Animals
 Animals are listed per class in every reserve.
 
-![Animals](/images/animals.png)
+![Animals](/images/animals.PNG)
 
 ### Harvests
 Harvests are displayed per animal in a table which can be sorted by any column.
 
-![Harvests](/images/harvests.png)
+![Harvests](/images/harvests.PNG)
 
 ## Installation
 No installation is needed, the program is compiled into a single executable with some asset files. Download the latest build, extract it and start the program.
