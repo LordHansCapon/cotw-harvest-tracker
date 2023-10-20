@@ -56,7 +56,10 @@ Build your own executables with Python!
 
 ## Known Issues
 As any software, this software also has flaws.
-- There is rare bug where the recording of animals will stop but no error will be displayed.
+- There is rare bug where the recording of animals would stop but no error is displayed.
+
+## Note
+This is my first python project and is meant to be a monorepo. The code quality is subpar because it was cobbled together quickly, however if you have suggestions regarding monorepo management with proper package management, feel free to submit an issue about it!
 
 ## Disclaimer
 The Harvest Tracker program does not modify your game at all, it merely reads your PC's memory. This does **NOT** violate EULA! You **should not** be banned as there is no way to detect this, however I take no responsibility if otherwise you get banned!
