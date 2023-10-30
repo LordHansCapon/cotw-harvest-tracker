@@ -54,7 +54,7 @@ def getSessionScoreAddress(pm):
 
 
 try:
-    print("- CotW Harvest Tracker v1.9 -")
+    print("- CotW Harvest Tracker v1.10 -")
 
     print("Searching for theHunterCotW_F process...")
     pm = Pymem('theHunterCotW_F.exe')
@@ -63,9 +63,9 @@ try:
     harvest_base_address = getHarvestBaseAddress(pm)
 
     if harvest_base_address is not None:
-        latestKillRecordAnswer = input("Would you like to record your latest kill which happened before starting this program (if there was any)? Type YES/NO: ")
+        latestKillRecordAnswer = input("Would you like to record your latest kill which happened before starting this program? y/n: ")
 
-        if latestKillRecordAnswer == "YES":
+        if str.lower(latestKillRecordAnswer) == "y":
             lastHarvestWeight = 0
             lastSessionScore = 0
             print("Latest kill will be recorded.")
@@ -115,7 +115,7 @@ try:
 
                         if newAnimalID not in harvestedAnimalIDs:
                             harvestedAnimalIDs.append(newAnimalID)
-                            print(" >> "+animalName+" - "+newAnimal.toString())
+                            print("["+str(len(harvestedAnimalIDs))+"] "+animalName+" - "+newAnimal.toString())
                             lastHarvestWeight = newHarvestWeight
                             lastSessionScore = newSessionScore
                             saveStructure.animals[animalName].append(newAnimal)

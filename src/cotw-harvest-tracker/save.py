@@ -15,7 +15,7 @@ class AnimalData:
         self.datetime = datetime
 
     def toString(self):
-        return "| Weight: "+str(self.weight)+" | Gender: "+str(self.gender)+" | Score: "+str(self.score)+" | Rating: "+str(self.rating)+" | Cash: "+str(self.cash)+" | XP: "+str(self.xp)+" | RatingIcon: "+str(self.ratingIcon)+" | Difficulty: "+str(self.difficulty)+" | Datetime: "+self.datetime
+        return "["+self.datetime+"] | Weight: "+str(self.weight)+" | Gender: "+str(self.gender)+" | Score: "+str(self.score)+" | Rating: "+str(self.rating)+" | Cash: "+str(self.cash)+" | XP: "+str(self.xp)+" | RatingIcon: "+str(self.ratingIcon)+" | Difficulty: "+str(self.difficulty)+""
 
     def getID(self):
         return str(self.weight)+'-'+str(self.rating)+'-'+str(self.difficulty)

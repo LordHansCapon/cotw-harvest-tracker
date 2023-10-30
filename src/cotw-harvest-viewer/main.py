@@ -7,7 +7,7 @@ from constants import *
 import math
 from utils import *
 
-version = "1.9"
+version = "1.10"
 
 saveStructure = loadData()
 
@@ -19,10 +19,12 @@ def isDiamondHarvested(animal):
     return False
 
 
-def createAnimalGridElement(reserveName, animal):
+def createAnimalGridElement(reserveName, animal, hasDiamond):
     with ui.link('', '/animal/'+reserveName+"/"+animal).classes('w-full'):
         with ui.card():
-            ui.image("assets/images/animals/"+animal+".webp")
+            with ui.image("assets/images/animals/" + animal + ".webp").style("overflow:visible"):
+                if hasDiamond:
+                    ui.image("assets/images/icons/diamond-icon.png").classes('bg-transparent').style("width:40px;height:44px;position:absolute;top:-10px;right:-10px;")
             ui.label(animal).style("font-weight:600;padding-left:5px;border-left:5px solid #6683b3;")
 
 
@@ -187,7 +189,7 @@ def reserve(reserveName):
         with ui.grid(columns=4).classes("w-full"):
             if len(RESERVES[reserveName].animalsPerClass[animalClass]) > 0:
                 for animal in RESERVES[reserveName].animalsPerClass[animalClass]:
-                    createAnimalGridElement(reserveName, animal)
+                    createAnimalGridElement(reserveName, animal, isDiamondHarvested(animal))
             else:
                 ui.label("No animal in this class.")
 
