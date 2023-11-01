@@ -7,7 +7,7 @@ from constants import *
 import math
 from utils import *
 
-version = "1.10"
+version = "1.11"
 
 saveStructure = loadData()
 
@@ -19,10 +19,11 @@ def isDiamondHarvested(animal):
     return False
 
 
-def createAnimalGridElement(reserveName, animal, hasDiamond):
+def createAnimalGridElement(reserveName, animal, hasDiamond, harvestCount):
     with ui.link('', '/animal/'+reserveName+"/"+animal).classes('w-full'):
         with ui.card():
             with ui.image("assets/images/animals/" + animal + ".webp").style("overflow:visible"):
+                ui.label(str(harvestCount)+" harvests").style("position:absolute;bottom:0;left:0;font-size:14px;padding:5px;")
                 if hasDiamond:
                     ui.image("assets/images/icons/diamond-icon.png").classes('bg-transparent').style("width:40px;height:44px;position:absolute;top:-10px;right:-10px;")
             ui.label(animal).style("font-weight:600;padding-left:5px;border-left:5px solid #6683b3;")
@@ -189,7 +190,7 @@ def reserve(reserveName):
         with ui.grid(columns=4).classes("w-full"):
             if len(RESERVES[reserveName].animalsPerClass[animalClass]) > 0:
                 for animal in RESERVES[reserveName].animalsPerClass[animalClass]:
-                    createAnimalGridElement(reserveName, animal, isDiamondHarvested(animal))
+                    createAnimalGridElement(reserveName, animal, isDiamondHarvested(animal), len(saveStructure.animals[animal]))
             else:
                 ui.label("No animal in this class.")
 
@@ -198,6 +199,37 @@ def reserve(reserveName):
 
 @ui.page("/animal/{reserveName}/{animalName}")
 def animal(reserveName, animalName):
+    if animalName not in saveStructure.animals:
+        saveStructure.animals[animalName] = []
+
+    noneCount = 0
+    bronzeCount = 0
+    silverCount = 0
+    goldCount = 0
+    diamondCount = 0
+    greatOneCount = 0
+
+    for animal in saveStructure.animals[animalName]:
+        match animal.ratingIcon:
+            case 0:
+                diamondCount = diamondCount+1
+            case 1:
+                goldCount = goldCount+1
+            case 2:
+                silverCount = silverCount+1
+            case 3:
+                bronzeCount = bronzeCount+1
+            case 4:
+                noneCount = noneCount+1
+            case 5:
+                greatOneCount = greatOneCount+1
+            case 6:
+                greatOneCount = greatOneCount+1
+            case 7:
+                greatOneCount = greatOneCount+1
+            case 8:
+                greatOneCount = greatOneCount+1
+
     with ui.element("div").style("display:grid;grid-template-columns:1fr auto;width:100%"):
         with ui.element("div"):
             ui.label(animalName).style("font-size:30px;color:#666;")
@@ -205,8 +237,19 @@ def animal(reserveName, animalName):
             with ui.link("", "/reserve/"+reserveName).style("float:right;"):
                 ui.button("BACK")
 
-    if animalName not in saveStructure.animals:
-        saveStructure.animals[animalName] = []
+    with ui.element("div").style("display:flex;width:100%;justify-content:space-evenly"):
+        with ui.element("div"):
+            ui.label("GREAT ONE: "+str(greatOneCount))
+        with ui.element("div"):
+            ui.label("DIAMOND: "+str(diamondCount))
+        with ui.element("div"):
+            ui.label("GOLD: "+str(goldCount))
+        with ui.element("div"):
+            ui.label("SILVER: "+str(silverCount))
+        with ui.element("div"):
+            ui.label("BRONZE: "+str(bronzeCount))
+        with ui.element("div"):
+            ui.label("NONE: "+str(noneCount))
 
     rowData = []
     for animal in saveStructure.animals[animalName]:
@@ -244,6 +287,37 @@ def animal(reserveName, animalName):
 
 @ui.page("/diamond-check/{animalName}")
 def animal(animalName):
+    if animalName not in saveStructure.animals:
+        saveStructure.animals[animalName] = []
+
+    noneCount = 0
+    bronzeCount = 0
+    silverCount = 0
+    goldCount = 0
+    diamondCount = 0
+    greatOneCount = 0
+
+    for animal in saveStructure.animals[animalName]:
+        match animal.ratingIcon:
+            case 0:
+                diamondCount = diamondCount+1
+            case 1:
+                goldCount = goldCount+1
+            case 2:
+                silverCount = silverCount+1
+            case 3:
+                bronzeCount = bronzeCount+1
+            case 4:
+                noneCount = noneCount+1
+            case 5:
+                greatOneCount = greatOneCount+1
+            case 6:
+                greatOneCount = greatOneCount+1
+            case 7:
+                greatOneCount = greatOneCount+1
+            case 8:
+                greatOneCount = greatOneCount+1
+
     with ui.element("div").style("display:grid;grid-template-columns:1fr auto;width:100%"):
         with ui.element("div"):
             ui.label(animalName).style("font-size:30px;color:#666;")
@@ -251,8 +325,19 @@ def animal(animalName):
             with ui.link("", "/diamond-checklist").style("float:right;"):
                 ui.button("BACK")
 
-    if animalName not in saveStructure.animals:
-        saveStructure.animals[animalName] = []
+    with ui.element("div").style("display:flex;width:100%;justify-content:space-evenly"):
+        with ui.element("div"):
+            ui.label("GREAT ONE: "+str(greatOneCount))
+        with ui.element("div"):
+            ui.label("DIAMOND: "+str(diamondCount))
+        with ui.element("div"):
+            ui.label("GOLD: "+str(goldCount))
+        with ui.element("div"):
+            ui.label("SILVER: "+str(silverCount))
+        with ui.element("div"):
+            ui.label("BRONZE: "+str(bronzeCount))
+        with ui.element("div"):
+            ui.label("NONE: "+str(noneCount))
 
     rowData = []
     for animal in saveStructure.animals[animalName]:

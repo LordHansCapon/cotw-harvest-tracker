@@ -54,7 +54,7 @@ def getSessionScoreAddress(pm):
 
 
 try:
-    print("- CotW Harvest Tracker v1.10 -")
+    print("- CotW Harvest Tracker v1.11 -")
 
     print("Searching for theHunterCotW_F process...")
     pm = Pymem('theHunterCotW_F.exe')
