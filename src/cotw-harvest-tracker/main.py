@@ -54,7 +54,7 @@ def getSessionScoreAddress(pm):
 
 
 try:
-    print("- CotW Harvest Tracker v1.11 -")
+    print("- CotW Harvest Tracker v1.12 -")
 
     print("Searching for theHunterCotW_F process...")
     pm = Pymem('theHunterCotW_F.exe')
@@ -102,11 +102,13 @@ try:
                             if animalName not in saveStructure.animals:
                                 animalName = readAnimalNameFromPointer(harvest_base_address)
                                 if animalName is None:
+                                    print("Failed to read animal name. (1)")
                                     continue
 
                         except UnicodeDecodeError:
                             animalName = readAnimalNameFromPointer(harvest_base_address)
                             if animalName is None:
+                                print("Failed to read animal name. (2)")
                                 continue
 
                         newAnimal = AnimalData(newHarvestWeight, pm.read_int(harvest_base_address+0x20), pm.read_int(harvest_base_address+0XB0), pm.read_float(harvest_base_address+0X3C), pm.read_int(harvest_base_address+0X38), pm.read_int(harvest_base_address+0X34), pm.read_int(harvest_base_address+0XAC), pm.read_float(harvest_base_address+0X40), datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
@@ -120,7 +122,11 @@ try:
                             lastSessionScore = newSessionScore
                             saveStructure.animals[animalName].append(newAnimal)
                             saveData(saveStructure)
+                        else:
+                            print("Animal has already been harvested: "+newAnimalID)
+
             except Exception as e:
+                print("Exception!")
                 print(e)
 
     else:

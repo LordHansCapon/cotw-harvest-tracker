@@ -7,7 +7,7 @@ from constants import *
 import math
 from utils import *
 
-version = "1.11"
+version = "1.12"
 
 saveStructure = loadData()
 
@@ -202,33 +202,9 @@ def animal(reserveName, animalName):
     if animalName not in saveStructure.animals:
         saveStructure.animals[animalName] = []
 
-    noneCount = 0
-    bronzeCount = 0
-    silverCount = 0
-    goldCount = 0
-    diamondCount = 0
-    greatOneCount = 0
-
-    for animal in saveStructure.animals[animalName]:
-        match animal.ratingIcon:
-            case 0:
-                diamondCount = diamondCount+1
-            case 1:
-                goldCount = goldCount+1
-            case 2:
-                silverCount = silverCount+1
-            case 3:
-                bronzeCount = bronzeCount+1
-            case 4:
-                noneCount = noneCount+1
-            case 5:
-                greatOneCount = greatOneCount+1
-            case 6:
-                greatOneCount = greatOneCount+1
-            case 7:
-                greatOneCount = greatOneCount+1
-            case 8:
-                greatOneCount = greatOneCount+1
+    ratingCounts = getRatingCounts(saveStructure.animals[animalName])
+    harvestsSinceLastDiamond = getHarvestsSinceLastDiamond(saveStructure.animals[animalName])
+    harvestsCountTookForLastDiamond = getHarvestsCountTookForLastDiamond(saveStructure.animals[animalName])
 
     with ui.element("div").style("display:grid;grid-template-columns:1fr auto;width:100%"):
         with ui.element("div"):
@@ -239,20 +215,30 @@ def animal(reserveName, animalName):
 
     with ui.element("div").style("display:flex;width:100%;justify-content:space-evenly"):
         with ui.element("div"):
-            ui.label("GREAT ONE: "+str(greatOneCount))
+            ui.label("GREAT ONE: "+str(ratingCounts.greatOne))
         with ui.element("div"):
-            ui.label("DIAMOND: "+str(diamondCount))
+            ui.label("DIAMOND: "+str(ratingCounts.diamond))
         with ui.element("div"):
-            ui.label("GOLD: "+str(goldCount))
+            ui.label("GOLD: "+str(ratingCounts.gold))
         with ui.element("div"):
-            ui.label("SILVER: "+str(silverCount))
+            ui.label("SILVER: "+str(ratingCounts.silver))
         with ui.element("div"):
-            ui.label("BRONZE: "+str(bronzeCount))
+            ui.label("BRONZE: "+str(ratingCounts.bronze))
         with ui.element("div"):
-            ui.label("NONE: "+str(noneCount))
+            ui.label("NONE: "+str(ratingCounts.none))
+
+    with ui.element("div").style("display:flex;width:100%;justify-content:space-evenly"):
+        with ui.element("div"):
+            ui.label("Harvests since last diamond: "+str(harvestsSinceLastDiamond))
+        with ui.element("div"):
+            ui.label("Harvests took for last diamond: "+str(harvestsCountTookForLastDiamond))
+
+    allAnimalsTemp = saveStructure.animals[animalName].copy()
+
+    allAnimals = sorted(allAnimalsTemp, key=lambda d: d.datetime, reverse=True)
 
     rowData = []
-    for animal in saveStructure.animals[animalName]:
+    for animal in allAnimals:
         rowData.append({
             "gender": GENDERS[animal.gender],
             "weight": round(animal.weight*100)/100,
@@ -290,33 +276,9 @@ def animal(animalName):
     if animalName not in saveStructure.animals:
         saveStructure.animals[animalName] = []
 
-    noneCount = 0
-    bronzeCount = 0
-    silverCount = 0
-    goldCount = 0
-    diamondCount = 0
-    greatOneCount = 0
-
-    for animal in saveStructure.animals[animalName]:
-        match animal.ratingIcon:
-            case 0:
-                diamondCount = diamondCount+1
-            case 1:
-                goldCount = goldCount+1
-            case 2:
-                silverCount = silverCount+1
-            case 3:
-                bronzeCount = bronzeCount+1
-            case 4:
-                noneCount = noneCount+1
-            case 5:
-                greatOneCount = greatOneCount+1
-            case 6:
-                greatOneCount = greatOneCount+1
-            case 7:
-                greatOneCount = greatOneCount+1
-            case 8:
-                greatOneCount = greatOneCount+1
+    ratingCounts = getRatingCounts(saveStructure.animals[animalName])
+    harvestsSinceLastDiamond = getHarvestsSinceLastDiamond(saveStructure.animals[animalName])
+    harvestsCountTookForLastDiamond = getHarvestsCountTookForLastDiamond(saveStructure.animals[animalName])
 
     with ui.element("div").style("display:grid;grid-template-columns:1fr auto;width:100%"):
         with ui.element("div"):
@@ -327,20 +289,30 @@ def animal(animalName):
 
     with ui.element("div").style("display:flex;width:100%;justify-content:space-evenly"):
         with ui.element("div"):
-            ui.label("GREAT ONE: "+str(greatOneCount))
+            ui.label("GREAT ONE: "+str(ratingCounts.greatOne))
         with ui.element("div"):
-            ui.label("DIAMOND: "+str(diamondCount))
+            ui.label("DIAMOND: "+str(ratingCounts.diamond))
         with ui.element("div"):
-            ui.label("GOLD: "+str(goldCount))
+            ui.label("GOLD: "+str(ratingCounts.gold))
         with ui.element("div"):
-            ui.label("SILVER: "+str(silverCount))
+            ui.label("SILVER: "+str(ratingCounts.silver))
         with ui.element("div"):
-            ui.label("BRONZE: "+str(bronzeCount))
+            ui.label("BRONZE: "+str(ratingCounts.bronze))
         with ui.element("div"):
-            ui.label("NONE: "+str(noneCount))
+            ui.label("NONE: "+str(ratingCounts.none))
+
+    with ui.element("div").style("display:flex;width:100%;justify-content:space-evenly"):
+        with ui.element("div"):
+            ui.label("Harvests since last diamond: "+str(harvestsSinceLastDiamond))
+        with ui.element("div"):
+            ui.label("Harvests took for last diamond: "+str(harvestsCountTookForLastDiamond))
+
+    allAnimalsTemp = saveStructure.animals[animalName].copy()
+
+    allAnimals = sorted(allAnimalsTemp, key=lambda d: d.datetime, reverse=True)
 
     rowData = []
-    for animal in saveStructure.animals[animalName]:
+    for animal in allAnimals:
         rowData.append({
             "gender": GENDERS[animal.gender],
             "weight": round(animal.weight*100)/100,
