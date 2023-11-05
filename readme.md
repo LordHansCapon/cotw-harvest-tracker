@@ -35,7 +35,7 @@ Latest harvests can be viewed in the Latest screen which is accessible from the 
 ![Latest harvests](/images/latest.PNG)
 
 ### Diamond checklist
-Latest harvests can be viewed in the Latest screen which is accessible from the Reserves screen.
+Diamond checklist menu listing all the animals and a diamond icon marking for every animal species you have harvested a diamond of.
 
 ![Diamond checklist](/images/diamond-checklist.PNG)
 
