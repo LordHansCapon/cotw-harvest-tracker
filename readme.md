@@ -18,10 +18,14 @@ Home screen, all the reserves are listed.
 ### Animals
 Animals are listed per class in every reserve.
 
+Animals have their harvest counts displayed along with a diamond badge if you have harvested at least one diamond of the species.
+
 ![Animals](/images/animals.PNG)
 
 ### Harvests
 Harvests are displayed per animal in a table which can be sorted by any column.
+
+Badge counts are recorded along with harvests since last diamond and harvests took for last diamond stats.
 
 ![Harvests](/images/harvests.PNG)
 
