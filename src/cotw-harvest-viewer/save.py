@@ -5,7 +5,7 @@ import pickle
 class AnimalData:
     type: ""
 
-    def __init__(self, weight, gender, score, rating, cash, xp, ratingIcon, difficulty, datetime):
+    def __init__(self, weight, gender, score, rating, cash, xp, ratingIcon, difficulty, datetime, furType):
         self.weight = weight
         self.gender = gender
         self.score = score
@@ -15,9 +15,10 @@ class AnimalData:
         self.ratingIcon = ratingIcon
         self.difficulty = difficulty
         self.datetime = datetime
+        self.furType = furType
 
     def toString(self):
-        return "| Weight: "+str(self.weight)+" | Gender: "+str(self.gender)+" | Score: "+str(self.score)+" | Rating: "+str(self.rating)+" | Cash: "+str(self.cash)+" | XP: "+str(self.xp)+" | RatingIcon: "+str(self.ratingIcon)+" | Difficulty: "+str(self.difficulty)+" | Datetime: "+self.datetime
+        return "["+self.datetime+"] | Weight: "+str(self.weight)+" | Fur: "+str(self.furType)+" | Gender: "+str(self.gender)+" | Score: "+str(self.score)+" | Rating: "+str(self.rating)+" | Cash: "+str(self.cash)+" | XP: "+str(self.xp)+" | RatingIcon: "+str(self.ratingIcon)+" | Difficulty: "+str(self.difficulty)+""
 
     def getID(self):
         return str(self.weight)+'-'+str(self.rating)+'-'+str(self.difficulty)

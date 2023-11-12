@@ -7,7 +7,7 @@ from constants import *
 import math
 from utils import *
 
-version = "1.12"
+version = "1.13"
 
 saveStructure = loadData()
 
@@ -51,6 +51,24 @@ def createFooter():
         ui.html("<p>Intended for game version: Steam default: 2613683 | Network version: 43 | 0.13.10</p>").style("color:#999")
         ui.html("<p>Visit the <b><a style='color:#6683b3' href='https://github.com/LordHansCapon/cotw-stat-viewer' target='_blank'>GitHub repo</a></b> for patch notes and latest version!</p>").style("color:#999")
         ui.html("<p>Version: "+version+"</p>").style("color:#999")
+
+
+def onCellClicked(animalName, event):
+    if event.args['colId'] == 'id':
+        maybeOpenAnimalImage(animalName, event.args['data']['idPure'])
+
+
+def getAnimalImagePath(animalName, id):
+    return os.getcwd() + "/screenshots/animals/" + str(animalName) + " " + str(id) + ".png"
+
+
+def maybeOpenAnimalImage(animalName, id):
+    if isAnimalHasImage(animalName, id):
+        os.startfile(getAnimalImagePath(animalName, id))
+
+
+def isAnimalHasImage(animalName, id):
+    return os.path.isfile(getAnimalImagePath(animalName, id))
 
 
 @ui.page("/")
@@ -132,26 +150,41 @@ def home():
 
     # Collect all animals into a single list
     for animalName in saveStructure.animals:
-        for animal in saveStructure.animals[animalName]:
+        for index, animal in enumerate(saveStructure.animals[animalName]):
             animal.type = animalName
+            animal.id = index
             allAnimalsTemp.append(animal)
 
     allAnimals = sorted(allAnimalsTemp, key=lambda d: d.datetime, reverse=True)
 
     for animal in allAnimals:
+        furTypeName = "UNKNOWN"
+
+        if hasattr(animal, "furType") and animal.furType is not None:
+            furTypeName = animal.furType
+
+        if isAnimalHasImage(animal.type, animal.id):
+            idDisplay = str(animal.id) + ' ⧉'
+        else:
+            idDisplay = str(animal.id)
+
         rowData.append({
+            "id": idDisplay,
             "animal": animal.type,
             "gender": GENDERS[animal.gender],
             "weight": round(animal.weight * 100) / 100,
             "badge": RATING_BADGES[animal.ratingIcon],
             "rating": math.floor(animal.rating * 100) / 100,
             "difficulty": getDifficultyName(animal.difficulty),
-            "difficultyScore": math.floor(animal.difficulty*1000)/1000,
+            "difficultyScore": math.floor(animal.difficulty * 1000) / 1000,
+            "furType": furTypeName,
             "cash": animal.cash,
             "xp": animal.xp,
             "score": animal.score,
             "datetime": animal.datetime,
+            'idPure': animal.id
         })
+
         maxLatestAnimals = maxLatestAnimals - 1
         if maxLatestAnimals == 0:
             break
@@ -159,20 +192,25 @@ def home():
     grid = ui.aggrid({
         'defaultColDef': {'sortable': True},
         'columnDefs': [
+            {'headerName': 'id', 'field': 'id', 'width': '140', 'sortable': False},
             {'headerName': 'Animal', 'field': 'animal'},
             {'headerName': 'Gender', 'field': 'gender', 'width': '140'},
             {'headerName': 'Badge', 'field': 'badge', 'width': '140'},
             {'headerName': 'Rating', 'field': 'rating', 'width': '140'},
             {'headerName': 'Difficulty', 'field': 'difficulty'},
             {'headerName': 'Difficulty Score', 'field': 'difficultyScore'},
+            {'headerName': 'Fur Type', 'field': 'furType'},
             {'headerName': 'Weight', 'field': 'weight', 'width': '140'},
             {'headerName': 'Cash', 'field': 'cash', 'width': '120'},
             {'headerName': 'XP', 'field': 'xp', 'width': '120'},
             {'headerName': 'Score', 'field': 'score', 'width': '120'},
-            {'headerName': 'Datetime', 'field': 'datetime', 'width': '300'},
+            {'headerName': 'Datetime', 'field': 'datetime', 'width': '300', 'sort': 'desc'},
+            {'headerName': 'idPure', 'field': 'idPure', 'hide': True},
         ],
+        'pagination': True,
+        'paginationPageSize': 50,
         'rowData': rowData
-    }).style("height: 600px")
+    }, html_columns=[0]).style("height: 600px").on('cellClicked', lambda event: onCellClicked(event.args['data']['animal'], event))
 
     createFooter()
 
@@ -235,39 +273,55 @@ def animal(reserveName, animalName):
 
     allAnimalsTemp = saveStructure.animals[animalName].copy()
 
-    allAnimals = sorted(allAnimalsTemp, key=lambda d: d.datetime, reverse=True)
-
     rowData = []
-    for animal in allAnimals:
+    for index, animal in enumerate(allAnimalsTemp):
+        furTypeName = "UNKNOWN"
+
+        if hasattr(animal, "furType") and animal.furType is not None:
+            furTypeName = animal.furType
+
+        if isAnimalHasImage(animalName, index):
+            idDisplay = str(index) + ' ⧉'
+        else:
+            idDisplay = str(index)
+
         rowData.append({
+            "id": idDisplay,
             "gender": GENDERS[animal.gender],
             "weight": round(animal.weight*100)/100,
             "badge": RATING_BADGES[animal.ratingIcon],
             "rating": math.floor(animal.rating*100)/100,
             "difficulty": getDifficultyName(animal.difficulty),
             "difficultyScore": math.floor(animal.difficulty*1000)/1000,
+            "furType": furTypeName,
             "cash": animal.cash,
             "xp": animal.xp,
             "score": animal.score,
             "datetime": animal.datetime,
+            'idPure': index
         })
 
     grid = ui.aggrid({
         'defaultColDef': {'sortable': True},
         'columnDefs': [
+            {'headerName': 'id', 'field': 'id', 'width': '140', 'sortable': False},
             {'headerName': 'Gender', 'field': 'gender', 'width': '140'},
             {'headerName': 'Badge', 'field': 'badge', 'width': '140'},
             {'headerName': 'Rating', 'field': 'rating', 'width': '140'},
             {'headerName': 'Difficulty', 'field': 'difficulty'},
             {'headerName': 'Difficulty Score', 'field': 'difficultyScore'},
+            {'headerName': 'Fur Type', 'field': 'furType'},
             {'headerName': 'Weight', 'field': 'weight', 'width': '140'},
             {'headerName': 'Cash', 'field': 'cash', 'width': '120'},
             {'headerName': 'XP', 'field': 'xp', 'width': '120'},
             {'headerName': 'Score', 'field': 'score', 'width': '120'},
-            {'headerName': 'Datetime', 'field': 'datetime', 'width': '300'},
+            {'headerName': 'Datetime', 'field': 'datetime', 'width': '300', 'sort': 'desc'},
+            {'headerName': 'idPure', 'field': 'idPure', 'hide': True},
         ],
+        'pagination': True,
+        'paginationPageSize': 50,
         'rowData': rowData
-    }).style("height: 600px")
+    }, html_columns=[0]).style("height: 600px").on('cellClicked', lambda event: onCellClicked(animalName, event))
     createFooter()
 
 
@@ -309,39 +363,55 @@ def animal(animalName):
 
     allAnimalsTemp = saveStructure.animals[animalName].copy()
 
-    allAnimals = sorted(allAnimalsTemp, key=lambda d: d.datetime, reverse=True)
-
     rowData = []
-    for animal in allAnimals:
+    for index, animal in enumerate(allAnimalsTemp):
+        furTypeName = "UNKNOWN"
+
+        if hasattr(animal, "furType") and animal.furType is not None:
+            furTypeName = animal.furType
+
+        if isAnimalHasImage(animalName, index):
+            idDisplay = str(index) + ' ⧉'
+        else:
+            idDisplay = str(index)
+
         rowData.append({
+            "id": idDisplay,
             "gender": GENDERS[animal.gender],
             "weight": round(animal.weight*100)/100,
             "badge": RATING_BADGES[animal.ratingIcon],
             "rating": math.floor(animal.rating*100)/100,
             "difficulty": getDifficultyName(animal.difficulty),
             "difficultyScore": math.floor(animal.difficulty*1000)/1000,
+            "furType": furTypeName,
             "cash": animal.cash,
             "xp": animal.xp,
             "score": animal.score,
             "datetime": animal.datetime,
+            'idPure': index
         })
 
     grid = ui.aggrid({
         'defaultColDef': {'sortable': True},
         'columnDefs': [
+            {'headerName': 'id', 'field': 'id', 'width': '140', 'sortable': False},
             {'headerName': 'Gender', 'field': 'gender', 'width': '140'},
             {'headerName': 'Badge', 'field': 'badge', 'width': '140'},
             {'headerName': 'Rating', 'field': 'rating', 'width': '140'},
             {'headerName': 'Difficulty', 'field': 'difficulty'},
             {'headerName': 'Difficulty Score', 'field': 'difficultyScore'},
+            {'headerName': 'Fur Type', 'field': 'furType'},
             {'headerName': 'Weight', 'field': 'weight', 'width': '140'},
             {'headerName': 'Cash', 'field': 'cash', 'width': '120'},
             {'headerName': 'XP', 'field': 'xp', 'width': '120'},
             {'headerName': 'Score', 'field': 'score', 'width': '120'},
-            {'headerName': 'Datetime', 'field': 'datetime', 'width': '300'},
+            {'headerName': 'Datetime', 'field': 'datetime', 'width': '300', 'sort': 'desc'},
+            {'headerName': 'idPure', 'field': 'idPure', 'hide': True},
         ],
+        'pagination': True,
+        'paginationPageSize': 50,
         'rowData': rowData
-    }).style("height: 600px")
+    }, html_columns=[0]).style("height: 600px").on('cellClicked', lambda event: onCellClicked(animalName, event))
     createFooter()
 
 
