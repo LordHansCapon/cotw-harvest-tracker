@@ -29,6 +29,16 @@ Badge counts are recorded along with harvests since last diamond and harvests to
 
 ![Harvests](/images/harvests.PNG)
 
+### Harvest Images
+Harvest images can be placed in the `screenshots/animals` folder with filenames that are composed of the animal name and its id: `<ANIMAL_NAME> <ID>.png`
+
+Example for my Red Fox diamond which's ID is 67 (*as shown on the image of the previous section*):
+![harvest images](/images/animal-screenshot.PNG)
+
+After placing the image, the ID will be marked with an icon and upon clicking the ID, the corresponding image will be opened in your preferred image viewer.
+
+Note: images must be in `png` format.
+
 ### Latest harvests
 Latest harvests can be viewed in the Latest screen which is accessible from the Reserves screen.
 
