@@ -7,7 +7,7 @@ from constants import *
 import math
 from utils import *
 
-version = "1.13"
+version = "1.14"
 
 saveStructure = loadData()
 
@@ -48,7 +48,7 @@ def createReserveGridElement(reserveName):
 def createFooter():
     with ui.element('div').style("text-align:center;padding:15p 0;").classes("w-full"):
         ui.html("<p>Images are taken from the <b><a style='color:#6683b3' href='https://thehuntercotw.fandom.com' target='_blank'>thehuntercotw.fandom.com</a></b> wiki page.</p>").style("color:#999")
-        ui.html("<p>Intended for game version: Steam default: 2613683 | Network version: 43 | 0.13.10</p>").style("color:#999")
+        ui.html("<p>Intended for game version: Steam default: 2649775 | Network version: 44 | 0.13.10</p>").style("color:#999")
         ui.html("<p>Visit the <b><a style='color:#6683b3' href='https://github.com/LordHansCapon/cotw-stat-viewer' target='_blank'>GitHub repo</a></b> for patch notes and latest version!</p>").style("color:#999")
         ui.html("<p>Version: "+version+"</p>").style("color:#999")
 
