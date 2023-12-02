@@ -78,6 +78,7 @@ def getFurTypeBaseAddress2(pm):
         exit(0)
 
     fur_type_base_address2 -= 0x1F368
+    fur_type_base_address2 -= 0x3E8
 
     print("Fur type base address 2 is at " + hex(fur_type_base_address2))
     return fur_type_base_address2
@@ -124,7 +125,7 @@ def getFurTypeName(fur_type_offset, fur_type_base_address, fur_type_base_address
 
 
 try:
-    print("- CotW Harvest Tracker v1.13 -")
+    print("- CotW Harvest Tracker v1.14 -")
 
     print("Searching for theHunterCotW_F process...")
     pm = Pymem('theHunterCotW_F.exe')
