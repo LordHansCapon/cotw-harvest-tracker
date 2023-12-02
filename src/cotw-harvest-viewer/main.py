@@ -7,7 +7,7 @@ from constants import *
 import math
 from utils import *
 
-version = "1.14"
+version = "1.15"
 
 saveStructure = loadData()
 
