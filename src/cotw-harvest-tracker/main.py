@@ -125,7 +125,7 @@ def getFurTypeName(fur_type_offset, fur_type_base_address, fur_type_base_address
 
 
 try:
-    print("- CotW Harvest Tracker v1.15 -")
+    print("- CotW Harvest Tracker v1.16 -")
 
     print("Searching for theHunterCotW_F process...")
     pm = Pymem('theHunterCotW_F.exe')
@@ -184,7 +184,7 @@ try:
                                 print("Failed to read animal name. (2)")
                                 continue
 
-                        newAnimal = AnimalData(newHarvestWeight, pm.read_int(harvest_base_address+0x20), pm.read_int(harvest_base_address+0XB0), pm.read_float(harvest_base_address+0X3C), pm.read_int(harvest_base_address+0X38), pm.read_int(harvest_base_address+0X34), pm.read_int(harvest_base_address+0XAC), pm.read_float(harvest_base_address+0X40), datetime.now().strftime("%Y/%m/%d %H:%M:%S"), getFurTypeName(pm.read_uint(harvest_base_address+0x50), fur_type_base_address, fur_type_base_address2, pm))
+                        newAnimal = AnimalData(newHarvestWeight, int.from_bytes(pm.read_bytes(harvest_base_address+0x20, 1), "big"), pm.read_int(harvest_base_address+0XB0), pm.read_float(harvest_base_address+0X3C), pm.read_int(harvest_base_address+0X38), pm.read_int(harvest_base_address+0X34), pm.read_int(harvest_base_address+0XAC), pm.read_float(harvest_base_address+0X40), datetime.now().strftime("%Y/%m/%d %H:%M:%S"), getFurTypeName(pm.read_uint(harvest_base_address+0x50), fur_type_base_address, fur_type_base_address2, pm))
 
                         newAnimalID = newAnimal.getID()
 

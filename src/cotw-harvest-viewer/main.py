@@ -7,7 +7,7 @@ from constants import *
 import math
 from utils import *
 
-version = "1.15"
+version = "1.16"
 
 saveStructure = loadData()
 
@@ -171,7 +171,7 @@ def home():
         rowData.append({
             "id": idDisplay,
             "animal": animal.type,
-            "gender": GENDERS[animal.gender],
+            "gender": GENDERS[animal.gender] if GENDERS.__contains__(animal.gender) else 'UNKNOWN',
             "weight": round(animal.weight * 100) / 100,
             "badge": RATING_BADGES[animal.ratingIcon],
             "rating": math.floor(animal.rating * 100) / 100,
@@ -287,7 +287,7 @@ def animal(reserveName, animalName):
 
         rowData.append({
             "id": idDisplay,
-            "gender": GENDERS[animal.gender],
+            "gender": GENDERS[animal.gender] if GENDERS.__contains__(animal.gender) else 'UNKNOWN',
             "weight": round(animal.weight*100)/100,
             "badge": RATING_BADGES[animal.ratingIcon],
             "rating": math.floor(animal.rating*100)/100,
@@ -377,7 +377,7 @@ def animal(animalName):
 
         rowData.append({
             "id": idDisplay,
-            "gender": GENDERS[animal.gender],
+            "gender": GENDERS[animal.gender] if GENDERS.__contains__(animal.gender) else 'UNKNOWN',
             "weight": round(animal.weight*100)/100,
             "badge": RATING_BADGES[animal.ratingIcon],
             "rating": math.floor(animal.rating*100)/100,
