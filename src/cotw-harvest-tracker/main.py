@@ -68,12 +68,12 @@ class CotWHarvestTracker:
         if session_score_address is None:
             self.report_error_and_quit("Session score address not found, please verify game is up to date")
 
-        session_score_address += 0x03   # Offset: 3
-        session_score_address = self.pm.read_int(session_score_address) + session_score_address + 0x04  # Offset: 4
-        session_score_address = self.pm.read_longlong(session_score_address) + 0x40 # Offset: 64
+        session_score_address += 0x03
+        session_score_address = self.pm.read_int(session_score_address) + session_score_address + 0x04
+        session_score_address = self.pm.read_longlong(session_score_address) + 0x40
 
-        session_score_address = self.pm.read_longlong(self.pm.read_longlong(self.pm.read_longlong(session_score_address)) + 0x190)  # Offset: 400
-        session_score_address += 0x6B0  # Offset: 1712
+        session_score_address = self.pm.read_longlong(self.pm.read_longlong(self.pm.read_longlong(session_score_address)) + 0x190)
+        session_score_address += 0x6B0
 
         return session_score_address
 
@@ -139,15 +139,11 @@ class CotWHarvestTracker:
         return None
 
     def check_and_set_new_session(self):
-        MIN_SESSION_SCORE_ADDRESS = 0x03 + 0x04 + 0x40 + 0x190 + 0x6B0
         try:
             current_session_score_address = self.get_session_score_address()
             if current_session_score_address != self.session_score_address:
-                while current_session_score_address <= MIN_SESSION_SCORE_ADDRESS:
-                    time.sleep(1)
-                    current_session_score_address = self.get_session_score_address()
-
-                self.session_score_address = current_session_score_address
+                time.sleep(1)   # Wait for address to fully initialize
+                self.session_score_address = self.get_session_score_address()
                 print("INFO: Detected new session address:\t{}".format(hex(self.session_score_address)))
                 self.report_ok()
 
