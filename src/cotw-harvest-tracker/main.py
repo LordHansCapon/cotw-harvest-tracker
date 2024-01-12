@@ -1,9 +1,8 @@
-import pymem.exception
 from save import *
 from pymem import Pymem
-import sys, time
+import pymem.exception
+import os, sys, time, subprocess, msvcrt
 from datetime import datetime
-import msvcrt
 
 class CotWHarvestTracker:
     def __init__(self):
@@ -11,14 +10,11 @@ class CotWHarvestTracker:
         print("INFO: Initializing...")
         self.harvested_animal_ids = []
         self.save_structure = loadData()
-        try:
-            self.pm = Pymem('theHunterCotW_F.exe')
-        except:
-            self.report_error_and_quit("Failed to attach to game\'s memory process, please start the game before starting this app")
-        
-        self.set_game_addresses()
-        self.get_latest_harvest()
 
+        self.pm = self.get_game_process()
+        self.set_game_addresses()
+
+        self.get_latest_harvest()
         self.run_harvest_checker()
 
     def report_ok(self):
@@ -42,6 +38,31 @@ class CotWHarvestTracker:
             sys.exit(1)
 
         return None
+
+    def get_game_process(self):
+        STEAM_PATH = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\theHunterCotW\\theHunterCotW_F.exe"
+        STEAM_GAME = os.path.basename(STEAM_PATH)
+
+        while True:
+            try:
+                pm = Pymem(STEAM_GAME)
+                pm.process_id   # Verify process ID exists
+                return pm
+            except pymem.exception.ProcessNotFound:
+                print("ERROR: Game is not currently running...")
+                print("INPUT: Do you want to open the game? (y/n): ", end='', flush=True)
+                open_game_answer = msvcrt.getch().decode()
+                print()
+                if str.lower(open_game_answer) == "y":
+                    print("INFO: Opening theHunter: CotW via Steam")
+                    subprocess.run([STEAM_PATH])
+                    print("INFO: Waiting for game initialization & splash screen to finish...")
+                    time.sleep(30)  # Wait for game to initialize before reobtaining process
+                else:
+                    print("INFO: Quitting harvest tracker application")
+                    sys.exit(1)
+            except Exception as e:
+                self.report_error_and_quit(e)
 
     def set_game_addresses(self):
         try:
