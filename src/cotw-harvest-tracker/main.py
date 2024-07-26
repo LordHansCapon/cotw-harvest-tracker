@@ -26,7 +26,7 @@ def getHarvestBaseAddress(pm):
 
     harvest_base_address += 0x03
     harvest_base_address = pm.read_int(harvest_base_address) + harvest_base_address + 0x05
-    harvest_base_address = pm.read_longlong(harvest_base_address) + 0x280
+    harvest_base_address = pm.read_longlong(harvest_base_address) + 0x288
 
     print("Harvest base address is at " + hex(harvest_base_address))
     return harvest_base_address
@@ -53,87 +53,47 @@ def getSessionScoreAddress(pm):
     return session_score_address
 
 
-def getFurTypeBaseAddress(pm):
-    print("Searching for fur type base address...")
-    fur_type_base_address = pm.pattern_scan_all(b"\x5A\xAA\xFA\x11\x32\x33\x00\x00")
-
-    if fur_type_base_address is None:
-        print(">>> Fur type address not found, are you running the correct game version?")
-        input("Press Enter to close... ")
-        exit(0)
-
-    fur_type_base_address -= 0x2C8
-
-    print("Fur type base address is at " + hex(fur_type_base_address))
-    return fur_type_base_address
-
-
-def getFurTypeBaseAddress2(pm):
-    print("Searching for fur type base address 2...")
-    fur_type_base_address2 = pm.pattern_scan_all(b"\xB3\x59\x17\xE9\x8B\x72\x13\x00")
-
-    if fur_type_base_address2 is None:
-        print(">>> Fur type address 2 not found, are you running the correct game version?")
-        input("Press Enter to close... ")
-        exit(0)
-
-    fur_type_base_address2 -= 0x1F740
-
-    print("Fur type base address 2 is at " + hex(fur_type_base_address2))
-    return fur_type_base_address2
-
-
-def getFurTypeName(fur_type_offset, fur_type_base_address, fur_type_base_address2, pm):
-    # By the looks of it, that's where the array has ended... although it may contain more than what we need, we should be fine.
-    max_iteration_count = 690
-    fur_type_iterator = fur_type_base_address + 0x150
-
+def getHarvestFurName(pm):
     try:
-        while max_iteration_count > 0:
-            current_fur_type = pm.read_uint(fur_type_iterator)
-
-            if current_fur_type == fur_type_offset:
-                name_address = pm.read_longlong(fur_type_base_address)
-                # Add translation offset to name address.
-                name_address += pm.read_uint(fur_type_iterator + 0x04)
-                return pm.read_string(name_address)
-
-            # Add 8 bytes and scan again.
-            fur_type_iterator += 0x08
-            max_iteration_count = max_iteration_count - 1
-
-        max_iteration_count = 0x030000
-        fur_type_iterator = fur_type_base_address2 + 0x160
-
-        while max_iteration_count > 0:
-            current_fur_type = pm.read_uint(fur_type_iterator)
-
-            if current_fur_type == fur_type_offset:
-                name_address = pm.read_longlong(fur_type_base_address2)
-                # Add translation offset to name address.
-                name_address += pm.read_uint(fur_type_iterator + 0x04)
-                return pm.read_string(name_address)
-
-            # Add 8 bytes and scan again.
-            fur_type_iterator += 0x08
-            max_iteration_count = max_iteration_count - 1
+        return pm.read_string(pm.read_longlong(fur_name_pointer_cache_address))
+    except Exception:
+        print("Failed to read animal\'s fur. UNKNOWN is set.")
+        return "UNKNOWN"
     except UnicodeDecodeError:
-        print("Failed to determine animal fur type name. Please report this on GitHub with the following type offset: "+str(hex(fur_type_offset)))
-
-    print("Animal fur type name not found. Fur type offset: "+str(hex(fur_type_offset)))
-    return "UNKNOWN"
-
+        print("Failed to read animal\'s fur. UNKNOWN is set.")
+        return "UNKNOWN"
 
 try:
     print("- CotW Harvest Tracker v1.17 -")
 
     print("Searching for theHunterCotW_F process...")
     pm = Pymem('theHunterCotW_F.exe')
+    print("Base address: "+str(hex(pm.base_address)))
+
+    fur_name_pointer_cache_address = pm.allocate(0x08)
+    fur_cache_function_address = pm.allocate(0x10)
+
+    #print("fur_name_pointer_cache_address: "+str(hex(fur_name_pointer_cache_address)))
+    #print("fur_cache_function_address: "+str(hex(fur_cache_function_address)))
+
+    fur_type_detour_address = pm.pattern_scan_all(b"\x45\x33\xC9\x41\xB0\x01\x41\x8B\x96\xD8\x02\x00\x00\x48\x8B\x0D")
+    fur_type_detour_address += 54
+    #print("fur_type_detour_address: "+str(hex(fur_type_detour_address)))
+
+    # Fur cache function.
+    pm.write_bytes(fur_cache_function_address, b"\x50\x48\xB8", 3)
+    pm.write_bytes(fur_cache_function_address+3, int.to_bytes(fur_name_pointer_cache_address, 8, byteorder="little"), 8)
+    pm.write_bytes(fur_cache_function_address+11, b"\x4C\x89\x08", 3)
+    pm.write_bytes(fur_cache_function_address+14, b"\x58", 1)
+    pm.write_bytes(fur_cache_function_address+15, b"\xC3", 1)
+
+    # Fur type detour to fur cache function.
+    pm.write_bytes(fur_type_detour_address, b"\xFF\x15\x02\x00\x00\x00\xEB\x08", 8)
+    pm.write_bytes(fur_type_detour_address+8, int.to_bytes(fur_cache_function_address, 8, byteorder="little"), 8)
+    pm.write_bytes(fur_type_detour_address+16, b"\x90\x90", 2)
 
     session_score_address = getSessionScoreAddress(pm)
     harvest_base_address = getHarvestBaseAddress(pm)
-    fur_type_base_address = getFurTypeBaseAddress(pm)
-    fur_type_base_address2 = getFurTypeBaseAddress2(pm)
 
     if harvest_base_address is not None:
         latestKillRecordAnswer = input("Would you like to record your latest kill which happened before starting this program? y/n: ")
@@ -184,7 +144,7 @@ try:
                                 print("Failed to read animal name. (2)")
                                 continue
 
-                        newAnimal = AnimalData(newHarvestWeight, int.from_bytes(pm.read_bytes(harvest_base_address+0x20, 1), "big"), pm.read_int(harvest_base_address+0XB0), pm.read_float(harvest_base_address+0X3C), pm.read_int(harvest_base_address+0X38), pm.read_int(harvest_base_address+0X34), int.from_bytes(pm.read_bytes(harvest_base_address+0xAC, 1), "big"), pm.read_float(harvest_base_address+0X40), datetime.now().strftime("%Y/%m/%d %H:%M:%S"), getFurTypeName(pm.read_uint(harvest_base_address+0x50), fur_type_base_address, fur_type_base_address2, pm))
+                        newAnimal = AnimalData(newHarvestWeight, int.from_bytes(pm.read_bytes(harvest_base_address+0x20, 1), "big"), pm.read_int(harvest_base_address+0XB0), pm.read_float(harvest_base_address+0X3C), pm.read_int(harvest_base_address+0X38), pm.read_int(harvest_base_address+0X34), int.from_bytes(pm.read_bytes(harvest_base_address+0xAC, 1), "big"), pm.read_float(harvest_base_address+0X40), datetime.now().strftime("%Y/%m/%d %H:%M:%S"), getHarvestFurName(pm))
 
                         newAnimalID = newAnimal.getID()
 
