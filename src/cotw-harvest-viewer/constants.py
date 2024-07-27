@@ -182,6 +182,19 @@ RESERVES = {
             8: [],
             9: ["BANTENG"],
         }
+    ),
+    'SUNDARPATAN': Reserve(
+        {
+            1: ["GREYLAG GOOSE", "WOOLLY HARE"],
+            2: ["NORTHERN RED MUNTJAC", "TIBETAN FOX"],
+            3: ["BLACKBUCK"],
+            4: ["SNOW LEOPARD", "BLUE SHEEP", "TAHR"],
+            5: [],
+            6: ["BARASINGHA", "NILGAI"],
+            7: [],
+            8: [],
+            9: ["BENGAL TIGER", "WATER BUFFALO", "WILD YAK"],
+        }
     )
 }
 

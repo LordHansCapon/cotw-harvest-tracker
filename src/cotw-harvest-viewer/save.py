@@ -118,7 +118,18 @@ class SaveStructure:
             "WILD BOAR": [],
             "WILD HOG": [],
             "WILLOW PTARMIGAN": [],
-            "BOBCAT": []
+            "BOBCAT": [],
+            # 1.18
+            "BLUE SHEEP": [],
+            "WOOLLY HARE": [],
+            "NORTHERN RED MUNTJAC": [],
+            "TIBETAN FOX": [],
+            "SNOW LEOPARD": [],
+            "TAHR": [],
+            "BARASINGHA": [],
+            "NILGAI": [],
+            "BENGAL TIGER": [],
+            "WILD YAK": [],
         }
 
 
