@@ -1,4 +1,7 @@
 # theHunter: Call of the Wild Harvest Tracker
+
+## **Starting from version 1.18, The Harvest Tracker program modifies your game in memory at runtime. Read more about it at the Disclaimer section down below!**
+
 ## Introduction
 Expansive Worlds' theHunter: Call of the Wild contains a lackluster implementation of harvest tracking in-game. This drove me nuts so I made a simple program that keeps track of my harvests (CotW Harvest Tracker) and a viewer program (CotW Harvest Viewer) that allows me to easily view my harvests.
 
@@ -76,7 +79,9 @@ As any software, this software also has flaws.
 This is my first python project and is meant to be a monorepo. The code quality is subpar because it was cobbled together quickly, however if you have suggestions regarding monorepo management with proper package management, feel free to submit an issue about it!
 
 ## Disclaimer
-The Harvest Tracker program does not modify your game at all, it merely reads your PC's memory. This does **NOT** violate EULA! You **should not** be banned as there is no way to detect this, however I take no responsibility if otherwise you get banned!
+~~The Harvest Tracker program does not modify your game at all, it merely reads your PC's memory. This does **NOT** violate EULA! You **should not** be banned as there is no way to detect this, however I take no responsibility if otherwise you get banned!~~
+
+Starting from version 1.18, The Harvest Tracker program modifies your game in memory at runtime (_does not modify your exe!_) to avoid updates breaking the game. It allocates 8 bytes for storing the calculated fur address name pointer and 16 bytes to store the function that caches the fur after calculation. Then the program detours for the cache function call at some point. This should NOT get you a ban, however I take no responsibility if otherwise you get banned!  
 
 ## Credits
 Images are taken from the <b>[thehuntercotw.fandom.com](https://thehuntercotw.fandom.com)</b> wiki page.
