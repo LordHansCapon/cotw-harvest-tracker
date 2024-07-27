@@ -64,7 +64,7 @@ def getHarvestFurName(pm):
         return "UNKNOWN"
 
 try:
-    print("- CotW Harvest Tracker v1.17 -")
+    print("- CotW Harvest Tracker v1.18 -")
 
     print("Searching for theHunterCotW_F process...")
     pm = Pymem('theHunterCotW_F.exe')
