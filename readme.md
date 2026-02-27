@@ -7,6 +7,10 @@ Expansive Worlds' theHunter: Call of the Wild contains a lackluster implementati
 
 The Harvest Tracker generates a save file which contains all the harvests per animal while the Harvest Viewer is aimed to give a simple user interface to view our harvests. Simple as that.
 
+Starting from 2.0, animals are tracked per reserve as some of you have requested!
+
+**Version 2.0 is NOT compatible with 1.x harvests.sav files!**
+
 ## Requirements
 - This software has only been tested on Windows 10 x64 with the Steam ENGLISH version of CotW. Other versions may not work.
 - **ONLY ENGLISH IS SUPPORTED, OTHER LANGUAGES CRASH THE SOFTWARE**
@@ -19,14 +23,14 @@ Home screen, all the reserves are listed.
 ![Reserves](/images/reserves.PNG)
 
 ### Animals
-Animals are listed per class in every reserve.
+Animals are listed class in every reserve.
 
 Animals have their harvest counts displayed along with a diamond badge if you have harvested at least one diamond of the species.
 
 ![Animals](/images/animals.PNG)
 
 ### Harvests
-Harvests are displayed per animal in a table which can be sorted by any column.
+Harvests are displayed per animal in a table which can be sorted by most columns.
 
 Badge counts are recorded along with harvests since last diamond and harvests took for last diamond stats.
 
@@ -56,7 +60,7 @@ Diamond checklist menu listing all the animals and a diamond icon marking for ev
 No installation is needed, the program is compiled into a single executable with some asset files. Download the latest build, extract it and start the program.
 
 ## Usage
-Start Expansive Worlds' **theHunter: Call of the Wild** then start the CotW Harvest Tracker executable. A console window will pop up which needs a little bit of time to finish initialization. Once it is complete the console will ask for a YES or NO input regarding your latest harvest (useful if you forgot to start the program before you harvested your last animal). Then a message will be displayed when it is ready to record: `"- All is good, we are checking your harvest every second -"`
+Start Expansive Worlds' **theHunter: Call of the Wild** then start the CotW Harvest Tracker executable. A console window will pop up which needs a little bit of time to finish initialization. Once it is complete, a message will be displayed when it is ready to record: `"- All is good, we are checking your harvest every second -"`
 
 ![Console](/images/console.PNG)
 
@@ -81,7 +85,11 @@ This is my first python project and is meant to be a monorepo. The code quality 
 ## Disclaimer
 ~~The Harvest Tracker program does not modify your game at all, it merely reads your PC's memory. This does **NOT** violate EULA! You **should not** be banned as there is no way to detect this, however I take no responsibility if otherwise you get banned!~~
 
-Starting from version 1.18, The Harvest Tracker program modifies your game in memory at runtime (_does not modify your exe!_) to avoid updates breaking the game. It allocates 8 bytes for storing the calculated fur address name pointer and 16 bytes to store the function that caches the fur after calculation. Then the program detours for the cache function call at some point. This should NOT get you a ban, however I take no responsibility if otherwise you get banned!  
+~~Starting from version 1.18, The Harvest Tracker program modifies your game in memory at runtime (_does not modify your exe!_) to avoid updates breaking the game. It allocates 8 bytes for storing the calculated fur address name pointer and 16 bytes to store the function that caches the fur after calculation. Then the program detours for the cache function call at some point. This should NOT get you a ban, however I take no responsibility if otherwise you get banned!~~
+
+Starting from 2.0, The Harvest Tracker program modifies your game in memory at runtime (_does not modify your exe!_) to avoid updates breaking the game. It hooks 2 functions to read and write harvest and fur data to be read later.
+
+This should NOT get you a ban, however I take no responsibility if otherwise you get banned!
 
 ## Credits
 Images are taken from the <b>[thehuntercotw.fandom.com](https://thehuntercotw.fandom.com)</b> wiki page.

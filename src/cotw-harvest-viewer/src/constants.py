@@ -1,7 +1,7 @@
-from reserve import *
+from location import *
 
-RESERVES = {
-    'HIRSCHFELDEN': Reserve(
+LOCATIONS = {
+    'HIRSCHFELDEN HUNTING RESERVE': Location(
         {
             1: ["CANADA GOOSE", "RING-NECKED PHEASANT", "EUROPEAN RABBIT"],
             2: ["RED FOX"],
@@ -14,7 +14,7 @@ RESERVES = {
             9: ["EUROPEAN BISON"],
         }
     ),
-    'LAYTON LAKE': Reserve(
+    'LAYTON LAKE DISTRICT': Location(
         {
             1: ["MALLARD", "MERRIAM TURKEY", "WHITE-TAILED JACKRABBIT"],
             2: ["COYOTE"],
@@ -27,7 +27,7 @@ RESERVES = {
             9: [],
         }
     ),
-    'MEDVED-TAIGA': Reserve(
+    'MEDVED-TAIGA NATIONAL PARK': Location(
         {
             1: ["WESTERN CAPERCAILLIE"],
             2: ["SIBERIAN MUSK DEER"],
@@ -40,7 +40,7 @@ RESERVES = {
             9: [],
         }
     ),
-    'VURHONGA SAVANNA': Reserve(
+    'VURHONGA SAVANNA': Location(
         {
             1: ["EURASIAN WIGEON", "SCRUB HARE"],
             2: ["SIDE-STRIPED JACKAL"],
@@ -53,7 +53,7 @@ RESERVES = {
             9: ["CAPE BUFFALO", "LION"],
         }
     ),
-    'PARQUE FERNANDO': Reserve(
+    'PARQUE FERNANDO': Location(
         {
             1: ["CINNAMON TEAL"],
             2: [],
@@ -66,7 +66,7 @@ RESERVES = {
             9: ["WATER BUFFALO"],
         }
     ),
-    'YUKON VALLEY': Reserve(
+    'YUKON VALLEY NATURE RESERVE': Location(
         {
             1: ["HARLEQUIN DUCK", "CANADA GOOSE"],
             2: ["RED FOX"],
@@ -79,12 +79,13 @@ RESERVES = {
             9: ["PLAINS BISON"],
         }
     ),
-    'CUATRO COLINAS': Reserve(
+    'CUATRO COLINAS GAME RESERVE': Location(
         {
             1: ["RING-NECKED PHEASANT", "EUROPEAN HARE"],
             2: [],
             3: ["ROE DEER"],
-            4: ["IBERIAN MOUFLON", "RONDA IBEX", "BECEITE IBEX", "GREDOS IBEX", "SOUTHEASTERN SPANISH IBEX", "WILD BOAR"],
+            4: ["IBERIAN MOUFLON", "RONDA IBEX", "BECEITE IBEX", "GREDOS IBEX", "SOUTHEASTERN SPANISH IBEX",
+                "WILD BOAR"],
             5: ["IBERIAN WOLF"],
             6: ["RED DEER"],
             7: [],
@@ -92,7 +93,7 @@ RESERVES = {
             9: [],
         }
     ),
-    'SILVER RIDGE PEAKS': Reserve(
+    'SILVER RIDGE PEAKS': Location(
         {
             1: ["MERRIAM TURKEY"],
             2: [],
@@ -105,7 +106,7 @@ RESERVES = {
             9: ["PLAINS BISON"],
         }
     ),
-    'TE AWAROA NATIONAL PARK': Reserve(
+    'TE AWAROA NATIONAL PARK': Location(
         {
             1: ["MERRIAM TURKEY", "MALLARD", "EUROPEAN RABBIT"],
             2: [],
@@ -118,7 +119,7 @@ RESERVES = {
             9: [],
         }
     ),
-    'RANCHO DEL ARROYO': Reserve(
+    'RANCHO DEL ARROYO': Location(
         {
             1: ["RIO GRANDE TURKEY", "RING-NECKED PHEASANT", "ANTELOPE JACKRABBIT"],
             2: ["COYOTE"],
@@ -131,7 +132,7 @@ RESERVES = {
             9: [],
         }
     ),
-    'MISSISSIPPI ACRES PRESERVE': Reserve(
+    'MISSISSIPPI ACRES PRESERVE': Location(
         {
             1: ["BOBWHITE QUAIL", "EASTERN WILD TURKEY", "GREEN-WINGED TEAL", "EASTERN COTTONTAIL RABBIT"],
             2: ["GRAY FOX", "COMMON RACCOON"],
@@ -144,9 +145,11 @@ RESERVES = {
             9: [],
         }
     ),
-    'REVONTULI COAST': Reserve(
+    'REVONTULI COAST': Location(
         {
-            1: ["EURASIAN WIGEON", "EURASIAN TEAL", "GOLDENEYE", "MALLARD", "TUFTED DUCK", "CANADA GOOSE", "GREYLAG GOOSE", "TUNDRA BEAN GOOSE", "BLACK GROUSE", "HAZEL GROUSE", "WESTERN CAPERCAILLIE", "ROCK PTARMIGAN", "WILLOW PTARMIGAN", "MOUNTAIN HARE"],
+            1: ["EURASIAN WIGEON", "EURASIAN TEAL", "GOLDENEYE", "MALLARD", "TUFTED DUCK", "CANADA GOOSE",
+                "GREYLAG GOOSE", "TUNDRA BEAN GOOSE", "BLACK GROUSE", "HAZEL GROUSE", "WESTERN CAPERCAILLIE",
+                "ROCK PTARMIGAN", "WILLOW PTARMIGAN", "MOUNTAIN HARE"],
             2: ["RACCOON DOG"],
             3: ["EURASIAN LYNX"],
             4: ["WHITETAIL DEER"],
@@ -157,9 +160,10 @@ RESERVES = {
             9: [],
         }
     ),
-    'NEW ENGLAND MOUNTAINS': Reserve(
+    'NEW ENGLAND MOUNTAINS': Location(
         {
-            1: ["RING-NECKED PHEASANT", "BOBWHITE QUAIL", "EASTERN WILD TURKEY", "GOLDENEYE", "MALLARD", "GREEN-WINGED TEAL", "EASTERN COTTONTAIL RABBIT"],
+            1: ["RING-NECKED PHEASANT", "BOBWHITE QUAIL", "EASTERN WILD TURKEY", "GOLDENEYE", "MALLARD",
+                "GREEN-WINGED TEAL", "EASTERN COTTONTAIL RABBIT"],
             2: ["RED FOX", "GRAY FOX", "COYOTE", "COMMON RACCOON"],
             3: ["BOBCAT"],
             4: ["WHITETAIL DEER"],
@@ -170,7 +174,7 @@ RESERVES = {
             9: [],
         }
     ),
-    'EMERALD COAST': Reserve(
+    'EMERALD COAST AUSTRALIA': Location(
         {
             1: ["MAGPIE GOOSE", "STUBBLE QUAIL"],
             2: ["RED FOX"],
@@ -183,7 +187,7 @@ RESERVES = {
             9: ["BANTENG"],
         }
     ),
-    'SUNDARPATAN': Reserve(
+    'SUNDARPATAN HUNTING RESERVE': Location(
         {
             1: ["GREYLAG GOOSE", "WOOLLY HARE"],
             2: ["NORTHERN RED MUNTJAC", "TIBETAN FOX"],
@@ -194,6 +198,48 @@ RESERVES = {
             7: [],
             8: [],
             9: ["BENGAL TIGER", "WATER BUFFALO", "WILD YAK"],
+        }
+    ),
+    "SALZWIESEN PARK": Location(
+        {
+            1: ["EURASIAN TEAL", "EURASIAN WIGEON", "TUNDRA BEAN GOOSE", "FERRUGINOUS DUCK", "GREYLAG GOOSE", "GADWALL",
+                "EUROPEAN RABBIT", "GOLDENEYE", "MALLARD", "RING-NECKED PHEASANT", "BLACK GROUSE", "TUFTED DUCK"],
+            2: ["COMMON RACCOON", "RACCOON DOG", "RED FOX"],
+            3: [],
+            4: [],
+            5: [],
+            6: [],
+            7: [],
+            8: [],
+            9: [],
+        }
+    ),
+    "ASKIY RIDGE HUNTING PRESERVE": Location(
+        {
+            1: ["RING-NECKED PHEASANT", "CANADA GOOSE", "SNOW GOOSE", "DUSKY GROUSE", "MALLARD", "WOOD DUCK",
+                "NORTHERN PINTAIL"],
+            2: ["NORTH AMERICAN BEAVER"],
+            3: ["PRONGHORN"],
+            4: ["MOUNTAIN GOAT", "WHITETAIL DEER"],
+            5: ["BIGHORN SHEEP", "MULE DEER"],
+            6: ["GRAY WOLF", "WOODLAND CARIBOU"],
+            7: ["BLACK BEAR", "MANITOBAN ELK"],
+            8: ["MOOSE"],
+            9: ["WOOD BISON"],
+        }
+    ),
+    "TÒRR NAN SÌTHEAN HUNTING ESTATE": Location(
+        {
+            1: ["BLACK GROUSE", "RED GROUSE", "EURASIAN WIGEON", "EURASIAN WOODCOCK", "RING-NECKED PHEASANT",
+                "WESTERN CAPERCAILLIE", "MOUNTAIN HARE", "AMERICAN MINK", "EURASIAN PINE MARTEN"],
+            2: ["EUROPEAN BADGER", 'RED FOX'],
+            3: ["FERAL GOAT", "ROE DEER"],
+            4: ["FALLOW DEER", "SIKA DEER"],
+            5: ["WILD BOAR"],
+            6: ["RED DEER"],
+            7: [],
+            8: [],
+            9: [],
         }
     )
 }

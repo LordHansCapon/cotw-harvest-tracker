@@ -1,26 +1,31 @@
-import pymem.exception
-from reserve import *
 from save import *
-from pymem import Pymem
 from nicegui import app, ui
-from constants import *
 import math
 from utils import *
 
-version = "1.18"
+version = "2.0"
 
 saveStructure = loadData()
 
 
-def isDiamondHarvested(animal):
-    for animalData in saveStructure.animals[animal]:
+def isDiamondHarvested(location, animal):
+    for animalData in saveStructure.locations[location][animal]:
         if animalData.ratingIcon == 0:
             return True
     return False
 
 
-def createAnimalGridElement(reserveName, animal, hasDiamond, harvestCount):
-    with ui.link('', '/animal/'+reserveName+"/"+animal).classes('w-full'):
+def isDiamondHarvestedAnywhere(animal):
+    for location in saveStructure.locations:
+        if animal in saveStructure.locations[location]:
+            for animalData in saveStructure.locations[location][animal]:
+                if animalData.ratingIcon == 0:
+                    return True
+    return False
+
+
+def createAnimalGridElement(locationName, animal, hasDiamond, harvestCount):
+    with ui.link('', '/animal/'+locationName+"/"+animal).classes('w-full'):
         with ui.card():
             with ui.image("assets/images/animals/" + animal + ".webp").style("overflow:visible"):
                 ui.label(str(harvestCount)+" harvests").style("position:absolute;bottom:0;left:0;font-size:14px;padding:5px;")
@@ -38,11 +43,11 @@ def createAnimalDiamondCheckGridElement(animal, hasDiamond):
             ui.label(animal).style("font-weight:600;padding-left:5px;border-left:5px solid #6683b3;")
 
 
-def createReserveGridElement(reserveName):
-    with ui.link('', '/reserve/'+reserveName).classes('w-full'):
+def createLocationGridElement(locationName):
+    with ui.link('', '/location/'+locationName).classes('w-full'):
         with ui.card():
-            ui.image("assets/images/reserves/"+reserveName+".webp")
-            ui.label(reserveName).style("font-weight:600;padding-left:5px;border-left:5px solid #6683b3;")
+            ui.image("assets/images/reserves/"+locationName+".webp")
+            ui.label(locationName).style("font-weight:600;padding-left:5px;border-left:5px solid #6683b3;")
 
 
 def createFooter():
@@ -75,7 +80,7 @@ def isAnimalHasImage(animalName, id):
 def home():
     with ui.element("div").style("display:grid;grid-template-columns:1fr auto;width:100%"):
         with ui.element("div"):
-            ui.label("RESERVES").style("font-size:30px;color:#666;")
+            ui.label("LOCATIONS").style("font-size:30px;color:#666;")
         with ui.element("div").style("text-align:right"):
             with ui.link("", "/latest").style("float:right;"):
                 ui.button("LATEST HARVESTS")
@@ -83,14 +88,14 @@ def home():
                 ui.button("DIAMOND CHECKLIST")
 
     with ui.grid(columns=5).classes("w-full"):
-        for reserveName in RESERVES:
-            createReserveGridElement(reserveName)
+        for locationName in LOCATIONS:
+            createLocationGridElement(locationName)
 
     createFooter()
 
 
 @ui.page("/diamond-checklist")
-def reserve():
+def location():
     with ui.element("div").style("display:grid;grid-template-columns:1fr auto;width:100%"):
         with ui.element("div"):
             ui.label("DIAMOND CHECKLIST").style("font-size:30px;color:#666;")
@@ -103,9 +108,9 @@ def reserve():
     for animalClass in range(1, 10):
         animalsPerClass.append([])
 
-    for reserveName in RESERVES:
-        for animalClass in RESERVES[reserveName].animalsPerClass:
-            for animalName in RESERVES[reserveName].animalsPerClass[animalClass]:
+    for locationName in LOCATIONS:
+        for animalClass in LOCATIONS[locationName].animalsPerClass:
+            for animalName in LOCATIONS[locationName].animalsPerClass[animalClass]:
                 if animalName not in animalsPerClass[animalClass-1]:
                     animalsPerClass[animalClass-1].append(animalName)
 
@@ -116,7 +121,7 @@ def reserve():
         if len(animalsPerClass[animalClass]) > 0:
             maxAnimalNumber = maxAnimalNumber + len(animalsPerClass[animalClass])
             for animal in animalsPerClass[animalClass]:
-                if isDiamondHarvested(animal):
+                if isDiamondHarvestedAnywhere(animal):
                     diamondAnimalNumber = diamondAnimalNumber + 1
 
     ui.label(str(diamondAnimalNumber)+"/"+str(maxAnimalNumber)+" diamond animals have been harvested.")
@@ -126,7 +131,7 @@ def reserve():
         with ui.grid(columns=4).classes("w-full"):
             if len(animalsPerClass[animalClass]) > 0:
                 for animal in animalsPerClass[animalClass]:
-                    createAnimalDiamondCheckGridElement(animal, isDiamondHarvested(animal))
+                    createAnimalDiamondCheckGridElement(animal, isDiamondHarvestedAnywhere(animal))
             else:
                 ui.label("No animal in this class.")
 
@@ -147,13 +152,16 @@ def home():
     rowData = []
     allAnimalsTemp = []
     maxLatestAnimals = 50
+    animalLocationById = {}
 
     # Collect all animals into a single list
-    for animalName in saveStructure.animals:
-        for index, animal in enumerate(saveStructure.animals[animalName]):
-            animal.type = animalName
-            animal.id = index
-            allAnimalsTemp.append(animal)
+    for locationName in saveStructure.locations:
+        for animalName in saveStructure.locations[locationName]:
+            for index, animal in enumerate(saveStructure.locations[locationName][animalName]):
+                animal.type = animalName
+                animal.id = index
+                animalLocationById[animal.id] = locationName
+                allAnimalsTemp.append(animal)
 
     allAnimals = sorted(allAnimalsTemp, key=lambda d: d.datetime, reverse=True)
 
@@ -170,6 +178,7 @@ def home():
 
         rowData.append({
             "id": idDisplay,
+            "reserve": animalLocationById[animal.id],
             "animal": animal.type,
             "gender": GENDERS[animal.gender] if GENDERS.__contains__(animal.gender) else 'UNKNOWN',
             "weight": round(animal.weight * 100) / 100,
@@ -193,7 +202,8 @@ def home():
         'defaultColDef': {'sortable': True},
         'columnDefs': [
             {'headerName': 'id', 'field': 'id', 'width': '140', 'sortable': False},
-            {'headerName': 'Animal', 'field': 'animal'},
+            {'headerName': 'Reserve', 'field': 'reserve', 'width': '300'},
+            {'headerName': 'Animal', 'field': 'animal', 'width': '300'},
             {'headerName': 'Gender', 'field': 'gender', 'width': '140'},
             {'headerName': 'Badge', 'field': 'badge', 'width': '140'},
             {'headerName': 'Rating', 'field': 'rating', 'width': '140'},
@@ -214,11 +224,11 @@ def home():
 
     createFooter()
 
-@ui.page("/reserve/{reserveName}")
-def reserve(reserveName):
+@ui.page("/location/{locationName}")
+def location(locationName):
     with ui.element("div").style("display:grid;grid-template-columns:1fr auto;width:100%"):
         with ui.element("div"):
-            ui.label(reserveName).style("font-size:30px;color:#666;")
+            ui.label(locationName).style("font-size:30px;color:#666;")
         with ui.element("div").style("text-align:right"):
             with ui.link("", "/").style("float:right;"):
                 ui.button("BACK")
@@ -226,29 +236,29 @@ def reserve(reserveName):
     for animalClass in range(1, 10):
         ui.label("Class "+str(animalClass)).style("font-size:22px;border-left:10px solid #6683b3;padding-left: 10px;")
         with ui.grid(columns=4).classes("w-full"):
-            if len(RESERVES[reserveName].animalsPerClass[animalClass]) > 0:
-                for animal in RESERVES[reserveName].animalsPerClass[animalClass]:
-                    createAnimalGridElement(reserveName, animal, isDiamondHarvested(animal), len(saveStructure.animals[animal]))
+            if len(LOCATIONS[locationName].animalsPerClass[animalClass]) > 0:
+                for animal in LOCATIONS[locationName].animalsPerClass[animalClass]:
+                    createAnimalGridElement(locationName, animal, isDiamondHarvested(locationName, animal), len(saveStructure.locations[locationName][animal]))
             else:
                 ui.label("No animal in this class.")
 
     createFooter()
 
 
-@ui.page("/animal/{reserveName}/{animalName}")
-def animal(reserveName, animalName):
-    if animalName not in saveStructure.animals:
-        saveStructure.animals[animalName] = []
+@ui.page("/animal/{locationName}/{animalName}")
+def animal(locationName, animalName):
+    if animalName not in saveStructure.locations[locationName]:
+        saveStructure.locations[locationName][animalName] = []
 
-    ratingCounts = getRatingCounts(saveStructure.animals[animalName])
-    harvestsSinceLastDiamond = getHarvestsSinceLastDiamond(saveStructure.animals[animalName])
-    harvestsCountTookForLastDiamond = getHarvestsCountTookForLastDiamond(saveStructure.animals[animalName])
+    ratingCounts = getRatingCounts(saveStructure.locations[locationName][animalName])
+    harvestsSinceLastDiamond = getHarvestsSinceLastDiamond(saveStructure.locations[locationName][animalName])
+    harvestsCountTookForLastDiamond = getHarvestsCountTookForLastDiamond(saveStructure.locations[locationName][animalName])
 
     with ui.element("div").style("display:grid;grid-template-columns:1fr auto;width:100%"):
         with ui.element("div"):
             ui.label(animalName).style("font-size:30px;color:#666;")
         with ui.element("div").style("text-align:right"):
-            with ui.link("", "/reserve/"+reserveName).style("float:right;"):
+            with ui.link("", "/location/"+locationName).style("float:right;"):
                 ui.button("BACK")
 
     with ui.element("div").style("display:flex;width:100%;justify-content:space-evenly"):
@@ -271,7 +281,7 @@ def animal(reserveName, animalName):
         with ui.element("div"):
             ui.label("Harvests took for last diamond: "+str(harvestsCountTookForLastDiamond))
 
-    allAnimalsTemp = saveStructure.animals[animalName].copy()
+    allAnimalsTemp = saveStructure.locations[locationName][animalName].copy()
 
     rowData = []
     for index, animal in enumerate(allAnimalsTemp):
@@ -327,12 +337,23 @@ def animal(reserveName, animalName):
 
 @ui.page("/diamond-check/{animalName}")
 def animal(animalName):
-    if animalName not in saveStructure.animals:
-        saveStructure.animals[animalName] = []
+    ratingCounts = RatingCount(0, 0, 0, 0, 0, 0)
+    harvestsSinceLastDiamond = 0
+    harvestsCountTookForLastDiamond = 0
+    animalLocationById = {}
+    allHarvestsOfAnimal = []
 
-    ratingCounts = getRatingCounts(saveStructure.animals[animalName])
-    harvestsSinceLastDiamond = getHarvestsSinceLastDiamond(saveStructure.animals[animalName])
-    harvestsCountTookForLastDiamond = getHarvestsCountTookForLastDiamond(saveStructure.animals[animalName])
+    for locationName in saveStructure.locations:
+        if animalName not in saveStructure.locations[locationName]:
+            saveStructure.locations[locationName][animalName] = []
+
+        for animal in saveStructure.locations[locationName][animalName]:
+            animalLocationById[animal.getID()] = locationName
+
+        allHarvestsOfAnimal.extend(saveStructure.locations[locationName][animalName].copy())
+        ratingCounts.add(getRatingCounts(saveStructure.locations[locationName][animalName]))
+        harvestsSinceLastDiamond += getHarvestsSinceLastDiamond(saveStructure.locations[locationName][animalName])
+        harvestsCountTookForLastDiamond += getHarvestsCountTookForLastDiamond(saveStructure.locations[locationName][animalName])
 
     with ui.element("div").style("display:grid;grid-template-columns:1fr auto;width:100%"):
         with ui.element("div"):
@@ -361,10 +382,8 @@ def animal(animalName):
         with ui.element("div"):
             ui.label("Harvests took for last diamond: "+str(harvestsCountTookForLastDiamond))
 
-    allAnimalsTemp = saveStructure.animals[animalName].copy()
-
     rowData = []
-    for index, animal in enumerate(allAnimalsTemp):
+    for index, animal in enumerate(allHarvestsOfAnimal):
         furTypeName = "UNKNOWN"
 
         if hasattr(animal, "furType") and animal.furType is not None:
@@ -377,6 +396,7 @@ def animal(animalName):
 
         rowData.append({
             "id": idDisplay,
+            "reserve": animalLocationById[animal.getID()],
             "gender": GENDERS[animal.gender] if GENDERS.__contains__(animal.gender) else 'UNKNOWN',
             "weight": round(animal.weight*100)/100,
             "badge": RATING_BADGES[animal.ratingIcon] if RATING_BADGES.__contains__(animal.ratingIcon) else 'UNKNOWN',
@@ -395,6 +415,7 @@ def animal(animalName):
         'defaultColDef': {'sortable': True},
         'columnDefs': [
             {'headerName': 'id', 'field': 'id', 'width': '140', 'sortable': False},
+            {'headerName': 'Reserve', 'field': 'reserve', 'width': '300'},
             {'headerName': 'Gender', 'field': 'gender', 'width': '140'},
             {'headerName': 'Badge', 'field': 'badge', 'width': '140'},
             {'headerName': 'Rating', 'field': 'rating', 'width': '140'},
