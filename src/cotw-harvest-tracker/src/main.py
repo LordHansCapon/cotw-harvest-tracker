@@ -1,6 +1,8 @@
 import pymem.exception
 import time
+import os
 import traceback
+import pyautogui, pygetwindow, pyscreeze
 from scanner import *
 from datetime import datetime
 from save import *
@@ -10,6 +12,25 @@ from pymem.ressources.kernel32 import VirtualProtectEx
 from ctypes import c_void_p, c_ulong
 
 saveStructure = loadData()
+
+
+def getRatingLevelFromText(ratingLevelText):
+    match ratingLevelText:
+        case "diamond":
+            return 0
+        case "gold":
+            return 1
+        case "silver":
+            return 2
+        case "bronze":
+            return 3
+        case "none":
+            return 4
+        # Added later so they done goofed the enum.
+        case "greatone":
+            return 5
+
+    return 4
 
 
 def readAnimalNameFromHarvest(harvest_base_address):
@@ -27,7 +48,8 @@ def readAnimalNameFromHarvest(harvest_base_address):
         animalName = animalName.rstrip()
         return animalName
     except:
-        logError("Failed to read animal\'s name. Please raise an issue in the GitHub repo with the animal you have harvested for a potential fix. Thank you.")
+        logError(
+            "Failed to read animal\'s name. Please raise an issue in the GitHub repo with the animal you have harvested for a potential fix. Thank you.")
         return None
 
 
@@ -118,16 +140,46 @@ def writeHarvestFurDetour(pm):
     return harvest_fur_address
 
 
+def doScreenshot(animalName, animalID):
+    window = pygetwindow.getActiveWindow()
+    screenshot = pyautogui.screenshot(region=(window.left, window.top, window.width, window.height))
+    filename = "screenshots/animals/" + (animalName.strip().upper()) + " " + str(animalID) + ".png"
+    screenshot.save(filename)
+    logInfo("Screenshot taken: " + filename)
+
+
 try:
     logInfo("- CotW Harvest Tracker v2.0 -")
+
+    os.makedirs("screenshots/animals", exist_ok=True)
 
     logInfo("Searching for theHunterCotW_F process...")
     pm = Pymem('theHunterCotW_F.exe')
     logInfo("Base address: " + str(hex(pm.base_address)))
 
+    minTrophyLevelToScreenshot = 0
+
+    while True:
+        isScreenshotFeatureEnabled = input("Do you want to enable screenshots of harvests? (y/n): ").strip().lower()
+        if isScreenshotFeatureEnabled in ("y", "n"):
+            break
+        print("Please enter 'y' or 'n'.")
+
+    if isScreenshotFeatureEnabled == "y":
+        while True:
+            minTrophyLevelToScreenshot = input(
+                "What is the minimum trophy rating you want to screenshot? (greatone/diamond/gold/silver/bronze/none): ").strip().lower()
+            if minTrophyLevelToScreenshot in ("greatone", "diamond", "gold", "silver", "bronze", "none"):
+                minTrophyLevelToScreenshot = getRatingLevelFromText(minTrophyLevelToScreenshot)
+                break
+            print("Please enter a valid trophy rating name.")
+        logInfo("Screenshots will be saved to your screenshots/animals folder in the tracker's folder.")
+
+    logInfo("Searching for harvest data address... Please wait.")
     harvest_base_address = writeHarvestDetour(pm)
     logInfo("Harvest data address: " + str(hex(harvest_base_address)))
 
+    logInfo("Searching for harvest fur address... Please wait.")
     harvest_fur_base_address = writeHarvestFurDetour(pm)
     logInfo("Harvest fur address: " + str(hex(harvest_fur_base_address)))
 
@@ -190,6 +242,18 @@ try:
                     lastHarvestWeight = newHarvestWeight
                     saveStructure.locations[locationName][animalName].append(newAnimal)
                     saveData(saveStructure)
+
+                    if isScreenshotFeatureEnabled:
+                        time.sleep(0.5)
+                        # Only record great ones and beyond.
+                        if minTrophyLevelToScreenshot >= 5:
+                            if newAnimal.ratingIcon >= minTrophyLevelToScreenshot:
+                                doScreenshot(animalName, len(saveStructure.locations[locationName][animalName]))
+                        else:
+                            # Anything else is in ascending order from diamond to none.
+                            if newAnimal.ratingIcon <= minTrophyLevelToScreenshot:
+                                doScreenshot(animalName, len(saveStructure.locations[locationName][animalName]))
+
                 else:
                     logInfo("Animal has already been harvested: " + newAnimalID)
 

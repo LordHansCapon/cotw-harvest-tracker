@@ -53,7 +53,7 @@ def createLocationGridElement(locationName):
 def createFooter():
     with ui.element('div').style("text-align:center;padding:15p 0;").classes("w-full"):
         ui.html("<p>Images are taken from the <b><a style='color:#6683b3' href='https://thehuntercotw.fandom.com' target='_blank'>thehuntercotw.fandom.com</a></b> wiki page.</p>").style("color:#999")
-        ui.html("<p>Intended for game version: Steam default: 2806253 | Network version: 47 | 0.13.10</p>").style("color:#999")
+        ui.html("<p>Intended for game version: Steam build ID: 21625324 | Network version: 60 | 0.13.10</p>").style("color:#999")
         ui.html("<p>Visit the <b><a style='color:#6683b3' href='https://github.com/LordHansCapon/cotw-stat-viewer' target='_blank'>GitHub repo</a></b> for patch notes and latest version!</p>").style("color:#999")
         ui.html("<p>Version: "+version+"</p>").style("color:#999")
 
