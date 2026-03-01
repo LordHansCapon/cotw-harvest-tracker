@@ -238,7 +238,7 @@ try:
 
                 if newAnimalID not in harvestedAnimalIDs:
                     harvestedAnimalIDs.append(newAnimalID)
-                    logInfo("[" + str(len(harvestedAnimalIDs)) + "] " + animalName + " - " + newAnimal.toString())
+                    logInfo("[" + str(len(harvestedAnimalIDs)) + "] #" + str(len(saveStructure.locations[locationName][animalName]) + 1) + " " + animalName + " - " + newAnimal.toString())
                     lastHarvestWeight = newHarvestWeight
                     saveStructure.locations[locationName][animalName].append(newAnimal)
                     saveData(saveStructure)
