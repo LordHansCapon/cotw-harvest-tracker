@@ -37,7 +37,7 @@ def createAnimalGridElement(locationName, animal, hasDiamond, harvestCount):
 def createAnimalDiamondCheckGridElement(animal, hasDiamond):
     with ui.link('', "/diamond-check/{animalName}".replace('{animalName}', animal)).classes('w-full'):
         with ui.card():
-            with ui.image("assets/images/animals/"+animal+".webp").style("overflow:visible"):
+            with ui.image("assets/images/animals/" + animal + ".webp").style("overflow:visible"):
                 if hasDiamond:
                     ui.image("assets/images/icons/diamond-icon.png").classes('bg-transparent').style("width:40px;height:44px;position:absolute;top:-10px;right:-10px;")
             ui.label(animal).style("font-weight:600;padding-left:5px;border-left:5px solid #6683b3;")
@@ -58,22 +58,22 @@ def createFooter():
         ui.html("<p>Version: "+version+"</p>").style("color:#999")
 
 
-def onCellClicked(animalName, event):
+def onCellClicked(locationName, animalName, event):
     if event.args['colId'] == 'id':
-        maybeOpenAnimalImage(animalName, event.args['data']['idPure'])
+        maybeOpenAnimalImage(locationName, animalName, event.args['data']['idPure'])
 
 
-def getAnimalImagePath(animalName, id):
-    return os.getcwd() + "/screenshots/animals/" + str(animalName) + " " + str(id) + ".png"
+def getAnimalImagePath(locationName, animalName, id):
+    return os.getcwd() + "/screenshots/animals/" + str(locationName) + " - "+ str(animalName) + " " + str(id) + ".png"
 
 
-def maybeOpenAnimalImage(animalName, id):
-    if isAnimalHasImage(animalName, id):
-        os.startfile(getAnimalImagePath(animalName, id))
+def maybeOpenAnimalImage(locationName, animalName, id):
+    if isAnimalHasImage(locationName, animalName, id):
+        os.startfile(getAnimalImagePath(locationName, animalName, id))
 
 
-def isAnimalHasImage(animalName, id):
-    return os.path.isfile(getAnimalImagePath(animalName, id))
+def isAnimalHasImage(locationName, animalName, id):
+    return os.path.isfile(getAnimalImagePath(locationName, animalName, id))
 
 
 @ui.page("/")
@@ -171,7 +171,7 @@ def home():
         if hasattr(animal, "furType") and animal.furType is not None:
             furTypeName = animal.furType
 
-        if isAnimalHasImage(animal.type, animal.id):
+        if isAnimalHasImage(animalLocationById[animal.id], animal.type, animal.id):
             idDisplay = str(animal.id) + ' ⧉'
         else:
             idDisplay = str(animal.id)
@@ -220,7 +220,7 @@ def home():
         'pagination': True,
         'paginationPageSize': 50,
         'rowData': rowData
-    }, html_columns=[0]).style("height: 600px").on('cellClicked', lambda event: onCellClicked(event.args['data']['animal'], event))
+    }, html_columns=[0]).style("height: 600px").on('cellClicked', lambda event: onCellClicked(event.args['data']['reserve'], event.args['data']['animal'], event))
 
     createFooter()
 
@@ -290,7 +290,7 @@ def animal(locationName, animalName):
         if hasattr(animal, "furType") and animal.furType is not None:
             furTypeName = animal.furType
 
-        if isAnimalHasImage(animalName, index):
+        if isAnimalHasImage(locationName, animalName, index):
             idDisplay = str(index) + ' ⧉'
         else:
             idDisplay = str(index)
@@ -331,7 +331,7 @@ def animal(locationName, animalName):
         'pagination': True,
         'paginationPageSize': 50,
         'rowData': rowData
-    }, html_columns=[0]).style("height: 600px").on('cellClicked', lambda event: onCellClicked(animalName, event))
+    }, html_columns=[0]).style("height: 600px").on('cellClicked', lambda event: onCellClicked(locationName, animalName, event))
     createFooter()
 
 
@@ -341,14 +341,17 @@ def animal(animalName):
     harvestsSinceLastDiamond = 0
     harvestsCountTookForLastDiamond = 0
     animalLocationById = {}
+    firstLocationWithImageByAnimalId = {}
     allHarvestsOfAnimal = []
 
     for locationName in saveStructure.locations:
         if animalName not in saveStructure.locations[locationName]:
             saveStructure.locations[locationName][animalName] = []
 
-        for animal in saveStructure.locations[locationName][animalName]:
+        for animalIndexInLocation, animal in enumerate(saveStructure.locations[locationName][animalName]):
             animalLocationById[animal.getID()] = locationName
+            if isAnimalHasImage(locationName, animalName, animalIndexInLocation):
+                firstLocationWithImageByAnimalId[animal.getID()] = {"locationName": locationName, "animalIndex": animalIndexInLocation}
 
         allHarvestsOfAnimal.extend(saveStructure.locations[locationName][animalName].copy())
         ratingCounts.add(getRatingCounts(saveStructure.locations[locationName][animalName]))
@@ -389,10 +392,15 @@ def animal(animalName):
         if hasattr(animal, "furType") and animal.furType is not None:
             furTypeName = animal.furType
 
-        if isAnimalHasImage(animalName, index):
-            idDisplay = str(index) + ' ⧉'
-        else:
-            idDisplay = str(index)
+        firstLocationWithImageForAnimal = None
+        idDisplay = str(index)
+        idPure = -1
+
+        if animal.getID() in firstLocationWithImageByAnimalId:
+            firstLocationWithImageForAnimal = firstLocationWithImageByAnimalId[animal.getID()]
+            if firstLocationWithImageByAnimalId is not None:
+                idDisplay = str(index) + ' ⧉'
+                idPure = firstLocationWithImageForAnimal["animalIndex"]
 
         rowData.append({
             "id": idDisplay,
@@ -408,7 +416,7 @@ def animal(animalName):
             "xp": animal.xp,
             "score": animal.score,
             "datetime": animal.datetime,
-            'idPure': index
+            'idPure': idPure
         })
 
     grid = ui.aggrid({
@@ -432,7 +440,7 @@ def animal(animalName):
         'pagination': True,
         'paginationPageSize': 50,
         'rowData': rowData
-    }, html_columns=[0]).style("height: 600px").on('cellClicked', lambda event: onCellClicked(animalName, event))
+    }, html_columns=[0]).style("height: 600px").on('cellClicked', lambda event: onCellClicked(firstLocationWithImageForAnimal["locationName"], animalName, event))
     createFooter()
 
 

@@ -248,11 +248,11 @@ try:
                         # Only record great ones and beyond.
                         if minTrophyLevelToScreenshot >= 5:
                             if newAnimal.ratingIcon >= minTrophyLevelToScreenshot:
-                                doScreenshot(animalName, len(saveStructure.locations[locationName][animalName]))
+                                doScreenshot(locationName + " - " + animalName, len(saveStructure.locations[locationName][animalName]) - 1)
                         else:
                             # Anything else is in ascending order from diamond to none.
                             if newAnimal.ratingIcon <= minTrophyLevelToScreenshot:
-                                doScreenshot(animalName, len(saveStructure.locations[locationName][animalName]))
+                                doScreenshot(locationName + " - " + animalName, len(saveStructure.locations[locationName][animalName]) - 1)
 
                 else:
                     logInfo("Animal has already been harvested: " + newAnimalID)
