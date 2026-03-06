@@ -1,4 +1,5 @@
 import pymem.exception
+from playsound3 import playsound
 import time
 import os
 import traceback
@@ -12,6 +13,12 @@ from pymem.ressources.kernel32 import VirtualProtectEx
 from ctypes import c_void_p, c_ulong
 
 saveStructure = loadData()
+
+
+def playsfx(filename):
+    filename = "assets/sounds/" + filename
+    if os.path.exists(filename):
+        playsound(filename, block=False)
 
 
 def getRatingLevelFromText(ratingLevelText):
@@ -146,6 +153,7 @@ def doScreenshot(animalName, animalID):
     filename = "screenshots/animals/" + (animalName.strip().upper()) + " " + str(animalID) + ".png"
     screenshot.save(filename)
     logInfo("Screenshot taken: " + filename)
+    playsfx("screenshot.wav")
 
 
 try:
