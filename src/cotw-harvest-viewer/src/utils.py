@@ -1,5 +1,6 @@
 from constants import *
 
+
 class RatingCount:
     def __init__(self, none, bronze, silver, gold, diamond, greatOne):
         self.none = none
@@ -8,6 +9,14 @@ class RatingCount:
         self.gold = gold
         self.diamond = diamond
         self.greatOne = greatOne
+
+    def add(self, other):
+        self.none += other.none
+        self.bronze += other.bronze
+        self.silver += other.silver
+        self.gold += other.gold
+        self.diamond += other.diamond
+        self.greatOne += other.greatOne
 
 
 def getDifficultyName(score):
@@ -35,6 +44,7 @@ def getHarvestsSinceLastDiamond(animalList):
 
     return result
 
+
 def getHarvestsCountTookForLastDiamond(animalList):
     result = -1
     allAnimalsTemp = animalList.copy()
@@ -51,7 +61,7 @@ def getHarvestsCountTookForLastDiamond(animalList):
             result = result + 1
 
     if result == -1:
-        result = '-'
+        result = 0
 
     return result
 
@@ -86,4 +96,3 @@ def getRatingCounts(animalList):
                 greatOneCount = greatOneCount + 1
 
     return RatingCount(noneCount, bronzeCount, silverCount, goldCount, diamondCount, greatOneCount)
-
